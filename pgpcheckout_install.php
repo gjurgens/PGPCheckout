@@ -24,11 +24,4 @@ function pgpcheckout_install() {
    add_option("pgpcheckout_db_version", $pgpcheckout_db_version);
 }
 
-function pgpcheckout_install_data() {
-   global $wpdb;
-   $welcome_name = "Mr. Wordpress";
-   $welcome_text = "Congratulations, you just completed the installation!";
-
-   $rows_affected = $wpdb->insert( $table_name, array( 'time' => current_time('mysql'), 'name' => $welcome_name, 'text' => $welcome_text ) );
-}
 ?>
