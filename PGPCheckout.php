@@ -17,5 +17,13 @@ function pgpcheckout_admin_actions() {
 	add_options_page("PGPCheckout", "PGPCheckout", 1, "PGPCheckout", "pgpcheckout_admin");
 }
 
+function pgpcheckout_install_hook() {
+	include('pgpcheckout_install.php');
+	pgpcheckout_install();
+	pgpcheckout_install_data();
+}
+
 add_action('admin_menu', 'pgpcheckout_admin_actions');
+
+register_activation_hook(__FILE__,'pgpcheckout_install_hook');
 ?>
