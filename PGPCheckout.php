@@ -10,7 +10,7 @@
 ?>
 <?php
 function pgpcheckout_admin() {
-	include('pgpcheckout_import_admin.php');
+	include('pgpcheckout_admin.php');
 }
 
 function pgpcheckout_admin_actions() {
@@ -22,7 +22,12 @@ function pgpcheckout_install_hook() {
 	pgpcheckout_install();
 }
 
+function pgpcheckout_form_hook() {
+	include('pgpcheckout_form.php');
+}
+
 add_action('admin_menu', 'pgpcheckout_admin_actions');
+add_action('init', 'pgpcheckout_form_hook');
 
 register_activation_hook(__FILE__,'pgpcheckout_install_hook');
 ?>
