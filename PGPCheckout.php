@@ -22,7 +22,8 @@ function pgpcheckout_install_hook() {
 	pgpcheckout_install();
 }
 
-function pgpcheckout_form_hook() {
+function pgpcheckout_form_hook() {	
+	include('lib/tinypgp.php');
 	include('pgpcheckout_form.php');
 }
 
