@@ -10,7 +10,15 @@
 		if($_REQUEST["pgpcheckout_id_transaction"]) {
 			$id_transaction = $_REQUEST["pgpcheckout_id_transaction"];
 		}
-		
+		$key_pair = new Crypt_RSA_KeyPair(1024);
+		$public_key = $key_pair->getPublicKey();
+		$private_key = $key_pair->getPrivateKey();
+
+		$rsa_obj = new Crypt_RSA;
+		$enc_data = $rsa_obj->encrypt("aaaaa", $key_pair->getPublicKey());
+
+		//echo("KEEEEEEY" . $public_key->toString() . ";");
+
 		$html = "";
 		if($_POST["pgpcheckout_posted"] == "true") {
 			$data = array(
