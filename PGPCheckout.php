@@ -22,7 +22,7 @@ function pgpcheckout_install_hook() {
 	pgpcheckout_install();
 }
 
-function pgpcheckout_form_hook() {	
+function pgpcheckout_form_hook() {
 	include('lib/tinypgp.php');
 	include('pgpcheckout_form.php');
 }
@@ -30,5 +30,5 @@ function pgpcheckout_form_hook() {
 add_action('admin_menu', 'pgpcheckout_admin_actions');
 add_action('init', 'pgpcheckout_form_hook');
 
-register_activation_hook(__FILE__,'pgpcheckout_install_hook');
+register_activation_hook(WP_PLUGIN_DIR . '/PGPCheckout/PGPCheckout.php','pgpcheckout_install_hook');
 ?>

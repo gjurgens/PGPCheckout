@@ -7,7 +7,7 @@
 		), $atts ) );
 		
 		$id_transaction = "";
-		if($_REQUEST["pgpcheckout_id_transaction"]) {
+		if(isset($_REQUEST["pgpcheckout_id_transaction"])) {
 			$id_transaction = $_REQUEST["pgpcheckout_id_transaction"];
 		}
 		$key_pair = new Crypt_RSA_KeyPair(1024);
@@ -15,18 +15,21 @@
 		$private_key = $key_pair->getPrivateKey();
 
 		$rsa_obj = new Crypt_RSA;
-		$enc_data = $rsa_obj->encrypt("aaaaa", $key_pair->getPublicKey());
+		$enc_data = $rsa_obj->encrypt("aaaaa", $public_key);
+		$dec_data = $rsa_obj->decrypt($enc_data, $private_key);
 
-		//echo("KEEEEEEY" . $public_key->toString() . ";");
+		echo("KEEEEEEY: " . $public_key->toString() . ";<br>");
+		echo("coded: " . $enc_data . ";<br>");
+		echo("decoded: " . $dec_data . ";<br>");
 
 		$html = "";
-		if($_POST["pgpcheckout_posted"] == "true") {
+		if(isset($_POST["pgpcheckout_posted"]) && $_POST["pgpcheckout_posted"] == "true") {
 			$data = array(
 				'id_transaction' => $id_transaction, 
-				'cc_name' => $_POST["pgpcheckout_cc_name"],
-				'cc_number' => $_POST["pgpcheckout_cc_number"],
-				'cc_expires' => $_POST["pgpcheckout_cc_expires"],
-				'cc_security_code' => $_POST["pgpcheckout_cc_security_code"]
+				'cc_name' => $rsa_obj->encrypt($_POST["pgpcheckout_cc_name"], $public_key),
+				'cc_number' => $rsa_obj->encrypt($_POST["pgpcheckout_cc_number"], $public_key),
+				'cc_expires' => $rsa_obj->encrypt($_POST["pgpcheckout_cc_expires"], $public_key),
+				'cc_security_code' => $rsa_obj->encrypt($_POST["pgpcheckout_cc_security_code"], $public_key)
 			);
 			$wpdb->insert( $wpdb->prefix . "pgpcheckout_transactions", (array) $data );
 			
