@@ -1,5 +1,5 @@
 <?php 
-	if($_POST['pgpcheckout_hidden'] == 'Y') {
+	if(isset($_POST['pgpcheckout_hidden']) && $_POST['pgpcheckout_hidden'] == 'Y') {
 		//Form data sent
 		$dbhost = $_POST['pgpcheckout_dbhost'];
 		update_option('pgpcheckout_dbhost', $dbhost);

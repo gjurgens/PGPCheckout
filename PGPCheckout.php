@@ -14,7 +14,7 @@ function pgpcheckout_admin() {
 }
 
 function pgpcheckout_admin_actions() {
-	add_options_page("PGPCheckout", "PGPCheckout", 1, "PGPCheckout", "pgpcheckout_admin");
+	add_options_page("PGPCheckout", "PGPCheckout", "activate_plugins", "PGPCheckout", "pgpcheckout_admin");
 }
 
 function pgpcheckout_install_hook() {
