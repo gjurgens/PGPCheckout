@@ -8,13 +8,12 @@ function pgpcheckout_install() {
 	
 	$table_name = $wpdb->prefix . "pgpcheckout_transactions";
 	$sql = "CREATE TABLE " . $table_name . " (
-		`id` mediumint(9) NOT NULL AUTO_INCREMENT,
-		`id_transaction` int(11) NOT NULL,
+		`id` bigint(12) NOT NULL AUTO_INCREMENT,
+		`id_transaction` bigint(12) NOT NULL,
+		`status` tinyint(2) NOT NULL DEFAULT 0,
 		`time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		`cc_name` varchar(255) NOT NULL,
-		`cc_number` varchar(255) NOT NULL,
-		`cc_expires` varchar(255) NOT NULL DEFAULT '',
-		`cc_security_code` varchar(255) NOT NULL,
+		`private_data` text(10240) NOT NULL,
+		`public_data` text(10240) NOT NULL,
 		UNIQUE KEY `id` (`id`)
 	);";
 	
