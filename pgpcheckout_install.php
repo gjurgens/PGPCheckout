@@ -10,6 +10,7 @@ function pgpcheckout_install() {
 	$sql = "CREATE TABLE " . $table_name . " (
 		`id` bigint(12) NOT NULL AUTO_INCREMENT,
 		`id_transaction` bigint(12) NOT NULL,
+		`id_product` bigint(12) NOT NULL,
 		`status` tinyint(2) NOT NULL DEFAULT 0,
 		`time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		`private_data` text(10240) NOT NULL,

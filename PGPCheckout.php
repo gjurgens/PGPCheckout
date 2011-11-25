@@ -13,8 +13,13 @@ function pgpcheckout_admin() {
 	include('pgpcheckout_admin.php');
 }
 
+function pgpcheckout_manage() {
+	include('pgpcheckout_manage.php');
+}
+
 function pgpcheckout_admin_actions() {
 	add_options_page("PGPCheckout", "PGPCheckout", "activate_plugins", "PGPCheckout", "pgpcheckout_admin");
+	add_submenu_page('tools.php', __('PGPCheckout'), __('PGPCheckout'), 'activate_plugins', 'pgpcheckout_manage', 'pgpcheckout_manage');
 }
 
 function pgpcheckout_install_hook() {

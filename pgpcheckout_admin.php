@@ -1,6 +1,6 @@
 <?php 
 	$public_key = "NOT SETED";
-	if(isset($_POST['pgpcheckout_action'])) {
+	if(isset($_POST['pgpcheckout_action']) && check_admin_referer( 'pgpcheckout_config', 'pgpcheckout_config_nonce' )) {
 		if($_POST['pgpcheckout_action'] == 'save') {
 			//Form data sent
 			$public_key = $_POST['pgpcheckout_public_key'];
@@ -27,6 +27,7 @@
 <?php    echo "<h2>" . __( 'PGPCheckout Options', 'pgpcheckout_trdom' ) . "</h2>"; ?>
 
 <form name="pgpcheckout_form" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
+	<?php wp_nonce_field( 'pgpcheckout_config','pgpcheckout_config_nonce' ); ?>
 	<input type="hidden" name="pgpcheckout_action" value="save" id="pgpcheckout_action">
 	<?php    echo "<h4>" . __( 'PGPCheckout Settings', 'pgpcheckout_trdom' ) . "</h4>"; ?>
 	<p><?php _e("Public Encryption Key: " ); ?>
