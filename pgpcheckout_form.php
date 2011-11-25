@@ -10,17 +10,20 @@
 		if(isset($_REQUEST["pgpcheckout_id_transaction"])) {
 			$id_transaction = $_REQUEST["pgpcheckout_id_transaction"];
 		}
-		$key_pair = new Crypt_RSA_KeyPair(1024);
-		$public_key = $key_pair->getPublicKey();
-		$private_key = $key_pair->getPrivateKey();
+		//$key_pair = new Crypt_RSA_KeyPair(1024);
+		//$public_key = $key_pair->getPublicKey();
+		//$private_key = $key_pair->getPrivateKey();
+		
+		
+		$public_key = Crypt_RSA_Key::fromString(get_option('pgpcheckout_public_key'));
+		if(!Crypt_RSA_Key::isValid($public_key)) die("Invali public Key");
+		//$rsa_obj = new Crypt_RSA;
+		//$enc_data = $rsa_obj->encrypt("aaaaa", $public_key);
+		//$dec_data = $rsa_obj->decrypt($enc_data, $private_key);
 
-		$rsa_obj = new Crypt_RSA;
-		$enc_data = $rsa_obj->encrypt("aaaaa", $public_key);
-		$dec_data = $rsa_obj->decrypt($enc_data, $private_key);
-
-		echo("KEEEEEEY: " . $public_key->toString() . ";<br>");
-		echo("coded: " . $enc_data . ";<br>");
-		echo("decoded: " . $dec_data . ";<br>");
+		//echo("KEEEEEEY: |" . $public_key->toString() . "|;<br>");
+		//echo("coded: " . $enc_data . ";<br>");
+		//echo("decoded: " . $dec_data . ";<br>");
 
 		$html = "";
 		if(isset($_POST["pgpcheckout_posted"]) && $_POST["pgpcheckout_posted"] == "true") {
