@@ -29,23 +29,27 @@
 		//echo("decoded: " . $dec_data . ";<br>");
 
 		$html = "";
+		$aPublic = array();
+		$aPrivate = array();
 		if(isset($_POST["pgpcheckout_posted"]) && $_POST["pgpcheckout_posted"] == "true") {
 			$private_data = "";
 			$public_data = "";
 			foreach($_POST as $key=>$value) {
 				if(strpos($key,"pgpcheckout_private") === 0) {
 					$private_data .= $key . ": " . $value . "\n";
+					$aPrivate[$key] = $value;
 				}
 				if(strpos($key,"pgpcheckout_public") === 0) {
 					$public_data .= $key . ": " . $value . "\n";
+					$aPublic[$key] = $value;
 				}
 			};
 			
 			$data = array(
 				'id_transaction' => $id_transaction, 
 				'id_product' => $id_product, 
-				'private_data' => $rsa_obj->encrypt($private_data, $public_key),
-				'public_data' => $public_data
+				'private_data' => $rsa_obj->encrypt(serialize($aPrivate), $public_key),
+				'public_data' => serialize($aPublic)
 			);
 			$wpdb->insert( $wpdb->prefix . "pgpcheckout_transactions", (array) $data );
 			

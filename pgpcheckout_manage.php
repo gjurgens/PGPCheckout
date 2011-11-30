@@ -40,7 +40,17 @@
 		<td><?php echo $transaction->status ?></td>
 		<td><?php echo $transaction->time ?></td>
 		<td><?php echo $transaction->id ?></td>
-		<td><?php echo $transaction->id ?></td>
+		<td>
+			<ul>
+			<?php 
+				$aPublic = unserialize($transaction->public_data);
+				//echo $aPublic["pgpcheckout_public_cc_name"];
+				foreach($aPublic as $key=>$value) {
+					echo "<li>" . $key . ":" . $value . "</li>";
+				};
+			?>
+			</ul>
+		</td>
 		
 	</tr>
 	<?php
