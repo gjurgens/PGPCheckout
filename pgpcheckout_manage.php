@@ -1,60 +1,181 @@
-<?php
-	global $wpdb;	
-	$table_name = $wpdb->prefix . "pgpcheckout_transactions";
-	
-	$transactions = $wpdb->get_results( 
-		"
-		SELECT 
-			id,
-			id_transaction,
-			id_product,
-			status,
-			time,
-			private_data,
-			public_data		
-		FROM $table_name
-		"
-	);
-	
+<?php 
 
-?>
-
-<table>
-	<tr>
-		<th>Id</th>
-		<th>Transaction</th>
-		<th>Product</th>
-		<th>Status</th>
-		<th>Date</th>
-		<th>Private</th>
-		<th>Public</th>
-	</tr>
-	<?php 
-	foreach ( $transactions as $transaction ) 
-	{
-	?>
-	<tr>
-		<td><?php echo $transaction->id ?></td>
-		<td><?php echo $transaction->id_transaction ?></td>
-		<td><?php echo $transaction->id_product ?></td>
-		<td><?php echo $transaction->status ?></td>
-		<td><?php echo $transaction->time ?></td>
-		<td><?php echo $transaction->id ?></td>
-		<td>
-			<ul>
-			<?php 
-				$aPublic = unserialize($transaction->public_data);
-				//echo $aPublic["pgpcheckout_public_cc_name"];
-				foreach($aPublic as $key=>$value) {
-					echo "<li>" . $key . ":" . $value . "</li>";
-				};
+	function pgpcheckoutDisplayTransactions($message = null) {
+			//Normal page
+			if(!is_null($message)){	
+				?>
+				<div class="updated"><p><strong><?php echo $message; ?></strong></p></div>
+				<?php
+			}		
+			
+			global $wpdb;
+			$table_name = $wpdb->prefix . "pgpcheckout_transactions";
+			$transactions = $wpdb->get_results( 
+				"
+				SELECT 
+					id,
+					id_transaction,
+					id_product,
+					status,
+					time,
+					private_data,
+					public_data		
+				FROM $table_name
+				"
+			);
+			
 			?>
-			</ul>
-		</td>
-		
-	</tr>
-	<?php
+			<script type="text/javascript">
+				function pgpcheckoutProcess(id) {
+					document.getElementById("pgpcheckout_transaction_id").value = id;
+					document.getElementById("pgpcheckout_manage_process_form").submit();
+				}
+			</script>
+			<form name="pgpcheckout_manage_process_form" id="pgpcheckout_manage_process_form" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
+				<?php wp_nonce_field( 'pgpcheckout_manage','pgpcheckout_manage_nonce' ); ?>
+				<input type="hidden" name="pgpcheckout_action" value="process" id="pgpcheckout_action">
+				<input type="hidden" name="pgpcheckout_transaction_id" value="-1" id="pgpcheckout_transaction_id">	
+			</form>
+			
+			<div class='wrap'>
+				<table class="widefat">
+					<thead>
+						<tr>
+							<th><?php echo __("Id") ?></th>
+							<th><?php echo __("Transaction") ?></th>
+							<th><?php echo __("Product") ?></th>
+							<th><?php echo __("Status") ?></th>
+							<th><?php echo __("Date") ?></th>
+							<th><?php echo __("Private") ?></th>
+							<th><?php echo __("Public") ?></th>
+							<th><?php echo __("Action") ?></th>
+						</tr>
+					</thead>
+					<tfoot>
+						<tr>
+							<th><?php echo __("Id") ?></th>
+							<th><?php echo __("Transaction") ?></th>
+							<th><?php echo __("Product") ?></th>
+							<th><?php echo __("Status") ?></th>
+							<th><?php echo __("Date") ?></th>
+							<th><?php echo __("Private") ?></th>
+							<th><?php echo __("Public") ?></th>
+							<th><?php echo __("Action") ?></th>
+						</tr>
+					</tfoot>
+					<tbody>
+					<?php 
+					foreach ( $transactions as $transaction ) 
+					{
+					?>
+						<tr>
+							<td><?php echo $transaction->id ?></td>
+							<td><?php echo $transaction->id_transaction ?></td>
+							<td><?php echo $transaction->id_product ?></td>
+							<td><?php echo $transaction->status ?></td>
+							<td><?php echo $transaction->time ?></td>
+							<td><?php echo $transaction->id ?></td>
+							<td>
+								<ul>
+								<?php 
+									$aPublic = unserialize($transaction->public_data);
+									if(is_array($aPublic)) {
+										foreach($aPublic as $key=>$value) {
+											echo "<li>" . $key . ":" . $value . "</li>";
+										};					
+									} else {
+										echo __("No data");
+									}
+								?>
+								</ul>
+							</td>
+							<td><a class="button-secondary" href="javascript:pgpcheckoutProcess(<?php echo $transaction->id ?>);" title="<?php echo __("Process") ?>"><?php echo __("Process") ?></a></td>
+						</tr>
+					<?php
+					}
+					
+					?>
+					</tbody>
+				</table>
+			</div>			
+			<?php					
 	}
-	
-	?>
-</table>
+
+	function pgpcheckoutProcess($id, $action = "display", $message = null) {
+			if(!is_null($message)){	
+				?>
+				<div class="updated"><p><strong><?php echo $message; ?></strong></p></div>
+				<?php
+			}	
+
+			global $wpdb;
+			$table_name = $wpdb->prefix . "pgpcheckout_transactions";
+			$transactions = $wpdb->get_results( 
+				"
+				SELECT 
+					id,
+					id_transaction,
+					id_product,
+					status,
+					time,
+					private_data,
+					public_data		
+				FROM $table_name
+				WHERE id = $id
+				"
+			);
+
+			foreach ( $transactions as $transaction ) 
+			{
+			?>
+				<?php echo $transaction->id ?>
+				<?php echo $transaction->id_transaction ?>
+				<?php echo $transaction->id_product ?>
+				<?php echo $transaction->status ?>
+				<?php echo $transaction->time ?>
+				<?php echo $transaction->id ?>
+				<ul>
+				<?php 
+					$aPublic = unserialize($transaction->public_data);
+					if(is_array($aPublic)) {
+						foreach($aPublic as $key=>$value) {
+							echo "<li>" . $key . ":" . $value . "</li>";
+						};					
+					} else {
+						echo __("No data");
+					}
+				?>
+				</ul>
+			<?php
+			}
+
+			
+			?>
+
+			<form name="pgpcheckout_manage_process_form" id="pgpcheckout_manage_process_form" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
+				<?php wp_nonce_field( 'pgpcheckout_manage','pgpcheckout_manage_nonce' ); ?>
+				<input type="hidden" name="pgpcheckout_action" value="process_save" id="pgpcheckout_action">
+				<input type="hidden" name="pgpcheckout_transaction_id" value="<?php echo $id ?>" id="pgpcheckout_transaction_id">	
+			</form>
+			<?php
+	}
+
+	if(isset($_POST['pgpcheckout_action']) && check_admin_referer( 'pgpcheckout_manage', 'pgpcheckout_manage_nonce' )) {
+		if($_POST['pgpcheckout_action'] == 'process' && isset($_POST['pgpcheckout_transaction_id']) && $_POST['pgpcheckout_transaction_id'] != -1) {
+			//Form data sent
+			pgpcheckoutProcess($_POST['pgpcheckout_transaction_id']);
+		}
+		else if($_POST['pgpcheckout_action'] == 'enter_public_key') {
+			//Form data sent
+			?>
+			<div class="updated"><p><strong><?php _e('Key' ); ?></strong></p></div>
+			<?php			
+		} else {
+			?>
+			<div class="updated"><p><strong><?php _e('ERROR' ); ?></strong></p></div>
+			<?php
+		}
+	} else {
+		pgpcheckoutDisplayTransactions();
+	}
+?>

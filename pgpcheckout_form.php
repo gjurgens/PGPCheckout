@@ -36,11 +36,9 @@
 			$public_data = "";
 			foreach($_POST as $key=>$value) {
 				if(strpos($key,"pgpcheckout_private") === 0) {
-					$private_data .= $key . ": " . $value . "\n";
 					$aPrivate[$key] = $value;
 				}
 				if(strpos($key,"pgpcheckout_public") === 0) {
-					$public_data .= $key . ": " . $value . "\n";
 					$aPublic[$key] = $value;
 				}
 			};
