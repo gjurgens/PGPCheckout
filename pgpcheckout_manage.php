@@ -1,5 +1,4 @@
 <?php 
-
 	function pgpcheckoutDisplayTransactions($message = null) {
 			//Normal page
 			if(!is_null($message)){	
@@ -108,6 +107,7 @@
 				<?php
 			}	
 
+
 			global $wpdb;
 			$table_name = $wpdb->prefix . "pgpcheckout_transactions";
 			$transaction = $wpdb->get_row( 
@@ -127,6 +127,21 @@
 
 			?>
 			<div class="wrap">
+				<?php 
+				if(!isset($_SESSION["PGPCHECKOUT_PRIVATE_KEY"])) {
+				?>
+				<form name="pgpcheckout_manage_process_privkey_form" id="pgpcheckout_manage_process_privkey_form" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
+					<?php wp_nonce_field( 'pgpcheckout_manage','pgpcheckout_manage_nonce' ); ?>
+					<input type="hidden" name="pgpcheckout_action" value="process_send_key" id="pgpcheckout_key_action">
+					<input type="hidden" name="pgpcheckout_transaction_id" value="<?php echo $_POST['pgpcheckout_transaction_id'] ?>" id="pgpcheckout_transaction_id">						
+					<p><?php _e("Private Encryption Key: " ); ?>
+						<textarea id="pgpcheckout_private_key" name="pgpcheckout_private_key" rows="10" cols="40" ></textarea>
+						<input class="button-primary" type="submit" name="send_key" value="<?php _e("Send Private Key"); ?>" id="submitbutton" />
+					</p>
+				</form>
+				<?php
+				}
+				?>
 				<form name="pgpcheckout_manage_process_form" id="pgpcheckout_manage_process_form" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
 					<?php wp_nonce_field( 'pgpcheckout_manage','pgpcheckout_manage_nonce' ); ?>
 					<input type="hidden" name="pgpcheckout_action" value="process_save" id="pgpcheckout_action">
@@ -148,7 +163,19 @@
 							}
 						?>
 						<?php 
-							$aPrivate = unserialize($transaction->private_data);
+							$private_data = "";
+							if(isset($_SESSION["PGPCHECKOUT_PRIVATE_KEY"])) {
+								$private_key = Crypt_RSA_Key::fromString($_SESSION["PGPCHECKOUT_PRIVATE_KEY"]);
+								if(!Crypt_RSA_Key::isValid($private_key)) die("Invali public Key");
+								$rsa_obj = new Crypt_RSA;
+
+								$private_data = $rsa_obj->decrypt($transaction->private_data, $private_key);
+							}
+
+				
+							
+							
+							$aPrivate = unserialize($private_data);
 							if(is_array($aPrivate)) {
 								foreach($aPrivate as $key=>$value) {
 									echo "<li>" . $key . ": " . $value . "</li>";
@@ -168,11 +195,15 @@
 			//Form data sent
 			pgpcheckoutProcess($_POST['pgpcheckout_transaction_id']);
 		}
-		else if($_POST['pgpcheckout_action'] == 'enter_public_key') {
+		else if($_POST['pgpcheckout_action'] == 'process_send_key') {
 			//Form data sent
 			?>
-			<div class="updated"><p><strong><?php _e('Key' ); ?></strong></p></div>
-			<?php			
+			<div class="updated"><p><strong><?php _e('Key'); ?></strong></p></div>
+			<?php
+			if(isset($_POST["pgpcheckout_private_key"])) {
+				$_SESSION["PGPCHECKOUT_PRIVATE_KEY"] = $_POST["pgpcheckout_private_key"];
+			}
+			pgpcheckoutProcess($_POST['pgpcheckout_transaction_id']);
 		} else {
 			?>
 			<div class="updated"><p><strong><?php _e('ERROR' ); ?></strong></p></div>

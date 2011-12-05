@@ -32,6 +32,7 @@
 	<?php    echo "<h4>" . __( 'PGPCheckout Settings', 'pgpcheckout_trdom' ) . "</h4>"; ?>
 	<p><?php _e("Public Encryption Key: " ); ?>
 		<textarea id="pgpcheckout_public_key" name="pgpcheckout_public_key" rows="10" cols="40" ><?php echo $public_key; ?></textarea>
+	</p>
 	<p class="submit">
 	<?php
 	if(isset($_POST['pgpcheckout_action']) && $_POST['pgpcheckout_action'] == 'generate_keypair') {

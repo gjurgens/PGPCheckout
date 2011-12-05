@@ -32,6 +32,15 @@ function pgpcheckout_form_hook() {
 	include('pgpcheckout_form.php');
 }
 
+function pgpcheckout_admin_init() {
+    if (!session_id()) {
+        session_start();
+		//session_destroy();
+    }
+}
+
+
+add_action('admin_init', 'pgpcheckout_admin_init');
 add_action('admin_menu', 'pgpcheckout_admin_actions');
 add_action('init', 'pgpcheckout_form_hook');
 
