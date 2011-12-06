@@ -127,8 +127,52 @@
 
 			?>
 			<div class="wrap">
+				<form name="pgpcheckout_manage_process_form" id="pgpcheckout_manage_process_form" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
+					<?php wp_nonce_field( 'pgpcheckout_manage','pgpcheckout_manage_nonce' ); ?>
+					<input type="hidden" name="pgpcheckout_action" value="process_save" id="pgpcheckout_action">
+					<input type="hidden" name="pgpcheckout_transaction_id" value="<?php echo $id ?>" id="pgpcheckout_transaction_id">	
+					<ul>
+						<li>Id: <?php echo $transaction->id ?></li>
+						<li>id_transaction: <?php echo $transaction->id_transaction ?></li>
+						<li>id_product: <?php echo $transaction->id_product ?></li>
+						<li>status: <?php echo $transaction->status ?></li>
+						<li>time: <?php echo $transaction->time ?></li>
+						<?php 
+							$aPublic = @unserialize($transaction->public_data);
+							if(is_array($aPublic)) {
+								foreach($aPublic as $key=>$value) {
+									echo "<li>" . $key . ": " . $value . "</li>";
+								};					
+							} else {
+								echo "<li>" . __("No data") . "</li>";
+							}
+						?>
+						<?php 
+							$private_data = "";
+							$private_key = "";
+							$validKey = false;
+							if(isset($_SESSION["PGPCHECKOUT_PRIVATE_KEY"])) {
+								$private_key = Crypt_RSA_Key::fromString($_SESSION["PGPCHECKOUT_PRIVATE_KEY"]);
+								if(Crypt_RSA_Key::isValid($private_key)) {
+									$rsa_obj = new Crypt_RSA;
+									$private_data = $rsa_obj->decrypt($transaction->private_data, $private_key);
+								}
+							}
+
+							$aPrivate = unserialize($private_data);
+							if(is_array($aPrivate)) {
+								$validKey = true;
+								foreach($aPrivate as $key=>$value) {
+									echo "<li>" . $key . ": " . $value . "</li>";
+								};					
+							} else {
+								echo "<li>" . __("Please enter a valid key for private data") . "</li>";
+							}
+						?>
+					</ul>
+				</form>
 				<?php 
-				if(!isset($_SESSION["PGPCHECKOUT_PRIVATE_KEY"])) {
+				if(!$validKey) {
 				?>
 				<form name="pgpcheckout_manage_process_privkey_form" id="pgpcheckout_manage_process_privkey_form" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
 					<?php wp_nonce_field( 'pgpcheckout_manage','pgpcheckout_manage_nonce' ); ?>
@@ -141,51 +185,7 @@
 				</form>
 				<?php
 				}
-				?>
-				<form name="pgpcheckout_manage_process_form" id="pgpcheckout_manage_process_form" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
-					<?php wp_nonce_field( 'pgpcheckout_manage','pgpcheckout_manage_nonce' ); ?>
-					<input type="hidden" name="pgpcheckout_action" value="process_save" id="pgpcheckout_action">
-					<input type="hidden" name="pgpcheckout_transaction_id" value="<?php echo $id ?>" id="pgpcheckout_transaction_id">	
-					<ul>
-						<li>Id: <?php echo $transaction->id ?></li>
-						<li>id_transaction: <?php echo $transaction->id_transaction ?></li>
-						<li>id_product: <?php echo $transaction->id_product ?></li>
-						<li>status: <?php echo $transaction->status ?></li>
-						<li>time: <?php echo $transaction->time ?></li>
-						<?php 
-							$aPublic = unserialize($transaction->public_data);
-							if(is_array($aPublic)) {
-								foreach($aPublic as $key=>$value) {
-									echo "<li>" . $key . ": " . $value . "</li>";
-								};					
-							} else {
-								echo "<li>" . __("No data") . "</li>";
-							}
-						?>
-						<?php 
-							$private_data = "";
-							if(isset($_SESSION["PGPCHECKOUT_PRIVATE_KEY"])) {
-								$private_key = Crypt_RSA_Key::fromString($_SESSION["PGPCHECKOUT_PRIVATE_KEY"]);
-								if(!Crypt_RSA_Key::isValid($private_key)) die("Invali public Key");
-								$rsa_obj = new Crypt_RSA;
-
-								$private_data = $rsa_obj->decrypt($transaction->private_data, $private_key);
-							}
-
-				
-							
-							
-							$aPrivate = unserialize($private_data);
-							if(is_array($aPrivate)) {
-								foreach($aPrivate as $key=>$value) {
-									echo "<li>" . $key . ": " . $value . "</li>";
-								};					
-							} else {
-								echo "<li>" . __("No data") . "</li>";
-							}
-						?>
-					</ul>
-				</form>
+				?>				
 			</div>
 			<?php
 	}

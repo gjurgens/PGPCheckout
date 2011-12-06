@@ -4,8 +4,14 @@
 		extract( shortcode_atts( array(
 			'id_transaction' => 0,
 			'id_product' => 0,
+			'public_fields' => '{}',
+			'private_fields' => '{}'
 		), $atts ) );
 
+		$oPublicFields = json_decode($public_fields);
+		$oPrivateFields = json_decode($private_fields);
+
+		//var_dump($oPublicFields);
 
 		if(isset($_REQUEST["pgpcheckout_id_transaction"])) {
 			$id_transaction = $_REQUEST["pgpcheckout_id_transaction"];
@@ -13,20 +19,10 @@
 		if(isset($_REQUEST["pgpcheckout_id_product"])) {
 			$id_product = $_REQUEST["pgpcheckout_id_product"];
 		}
-		//$key_pair = new Crypt_RSA_KeyPair(1024);
-		//$public_key = $key_pair->getPublicKey();
-		//$private_key = $key_pair->getPrivateKey();
-		
 		
 		$public_key = Crypt_RSA_Key::fromString(get_option('pgpcheckout_public_key'));
 		if(!Crypt_RSA_Key::isValid($public_key)) die("Invali public Key");
 		$rsa_obj = new Crypt_RSA;
-		//$enc_data = $rsa_obj->encrypt("aaaaa", $public_key);
-		//$dec_data = $rsa_obj->decrypt($enc_data, $private_key);
-
-		//echo("KEEEEEEY: |" . $public_key->toString() . "|;<br>");
-		//echo("coded: " . $enc_data . ";<br>");
-		//echo("decoded: " . $dec_data . ";<br>");
 
 		$html = "";
 		$aPublic = array();
@@ -58,13 +54,22 @@
 					<input type=\"hidden\" name=\"pgpcheckout_posted\" value=\"true\" />
 					<input type=\"hidden\" name=\"pgpcheckout_id_transaction\" value=\"" . $id_transaction . "\" />
 					<input type=\"hidden\" name=\"pgpcheckout_id_product\" value=\"" . $id_product . "\" />
-					<label class=\"pgpcheckout-label\">" . __('Nombre:') . "</label><input type=\"text\"  name=\"pgpcheckout_public_cc_name\" class=\"pgpcheckout-input\" />
-					<label class=\"pgpcheckout-label\">" . __('Numero:') . "</label><input type=\"text\"  name=\"pgpcheckout_private_cc_number\" class=\"pgpcheckout-input\" />
-					<label class=\"pgpcheckout-label\">" . __('Expiracion:') . "</label><input type=\"text\"  name=\"pgpcheckout_private_cc_expires\" class=\"pgpcheckout-input\" />
-					<label class=\"pgpcheckout-label\">" . __('Codigo de seguridad:') . "</label><input type=\"text\"  name=\"pgpcheckout_private_cc_security_code\" class=\"pgpcheckout-input\" />
+					<ul>
+			";
+			
+			foreach($oPublicFields as $pubKey=>$pubConfig) {
+				$html .= "<li><label class=\"pgpcheckout-label\">" . $pubConfig->display . "</label><input type=\"" . $pubConfig->type . "\"  name=\"pgpcheckout_public_" . $pubKey . "\" class=\"" . $pubConfig->class . "\" /></li>";
+			};
+			foreach($oPrivateFields as $privKey=>$privConfig) {
+				$html .= "<li><label class=\"pgpcheckout-label\">" . $privConfig->display . "</label><input type=\"" . $privConfig->type . "\"  name=\"pgpcheckout_private_" . $privKey . "\" class=\"" . $privConfig->class . "\" /></li>";
+			};
+			 			
+			
+			$html .= "
+					</ul>
 					<input type=\"submit\" value=\"" . __('Enviar') . "\" />
-				</form>
-			";					
+				</form>			
+			";				
 		}
 		
 		return $html;

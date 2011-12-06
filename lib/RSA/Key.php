@@ -299,9 +299,11 @@ class Crypt_RSA_Key extends Crypt_RSA_ErrorHandler
     {
         $decoded = base64_decode($key_str);
         if ($decoded === false) return false;
-
-        list($modulus, $exponent, $key_type) = unserialize($decoded);
-        $obj = &new Crypt_RSA_Key($modulus, $exponent, $key_type, $wrapper_name);
+		$obj = null;
+		if(@unserialize($decoded)){
+			list($modulus, $exponent, $key_type) = unserialize($decoded);
+        	$obj = &new Crypt_RSA_Key($modulus, $exponent, $key_type, $wrapper_name);
+		}
         return $obj;
     }
 
