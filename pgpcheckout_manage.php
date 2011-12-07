@@ -80,7 +80,7 @@
 									$aPublic = unserialize($transaction->public_data);
 									if(is_array($aPublic)) {
 										foreach($aPublic as $key=>$value) {
-											echo "<li>" . $key . ":" . $value . "</li>";
+											echo "<li>" . str_replace("pgpcheckout_public_","",$key) . ": " . $value . "</li>";
 										};					
 									} else {
 										echo __("No data");
@@ -141,7 +141,7 @@
 							$aPublic = @unserialize($transaction->public_data);
 							if(is_array($aPublic)) {
 								foreach($aPublic as $key=>$value) {
-									echo "<li>" . $key . ": " . $value . "</li>";
+									echo "<li>" . str_replace("pgpcheckout_public_","",$key) . ": " . $value . "</li>";
 								};					
 							} else {
 								echo "<li>" . __("No data") . "</li>";
@@ -163,7 +163,7 @@
 							if(is_array($aPrivate)) {
 								$validKey = true;
 								foreach($aPrivate as $key=>$value) {
-									echo "<li>" . $key . ": " . $value . "</li>";
+									echo "<li>" . str_replace("pgpcheckout_private_","",$key) . ": " . $value . "</li>";
 								};					
 							} else {
 								echo "<li>" . __("Please enter a valid key for private data") . "</li>";
@@ -198,7 +198,7 @@
 		else if($_POST['pgpcheckout_action'] == 'process_send_key') {
 			//Form data sent
 			?>
-			<div class="updated"><p><strong><?php _e('Key'); ?></strong></p></div>
+			<div class="updated"><p><strong><?php _e('Private Key Loaded Temporarily'); ?></strong></p></div>
 			<?php
 			if(isset($_POST["pgpcheckout_private_key"])) {
 				$_SESSION["PGPCHECKOUT_PRIVATE_KEY"] = $_POST["pgpcheckout_private_key"];
