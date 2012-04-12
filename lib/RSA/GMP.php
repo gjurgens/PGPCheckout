@@ -62,7 +62,7 @@ class Crypt_RSA_Math_GMP
     function Crypt_RSA_Math_GMP()
     {
         if (!extension_loaded('gmp')) {
-            if (!@dl('gmp.' . PHP_SHLIB_SUFFIX) && !@dl('php_gmp.' . PHP_SHLIB_SUFFIX)) {
+            if (!function_exists('dl') || (!@dl('gmp.' . PHP_SHLIB_SUFFIX) && !@dl('php_gmp.' . PHP_SHLIB_SUFFIX))) {
                 // cannot load GMP extension
                 $this->errstr = 'Crypt_RSA package requires PHP GMP package. ' .
                      'See http://php.net/gmp for details';

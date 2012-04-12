@@ -61,7 +61,7 @@ class Crypt_RSA_Math_BigInt
     function Crypt_RSA_Math_BigInt()
     {
         if (!extension_loaded('big_int')) {
-            if (!@dl('big_int.' . PHP_SHLIB_SUFFIX) && !@dl('php_big_int.' . PHP_SHLIB_SUFFIX)) {
+            if (!function_exists('dl') || (!@dl('big_int.' . PHP_SHLIB_SUFFIX) && !@dl('php_big_int.' . PHP_SHLIB_SUFFIX))) {
                 // cannot load big_int extension
                 $this->errstr = 'Crypt_RSA package requires big_int PECL package. ' .
                      'It is available at http://pecl.php.net/packages/big_int';
